@@ -1,0 +1,19 @@
+p {
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+.header .header-right p:hover {
+    background-color: #ddd;
+    color: #5d6770;
+    transition: 0.3s all;
+}
+
+.header .header-right p.active {
+    background-color: dodgerblue;
+    color: white;
+    transition: 0.3s all;
+}

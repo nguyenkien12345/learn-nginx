@@ -1,0 +1,34 @@
+services:
+  nginx:
+    container_name: my-project-nginx
+    build:
+      context: .
+    ports:
+      - 8080:80
+    volumes:
+      - ./learn-nginx/config/nginx.conf:/etc/nginx/nginx.conf
+      - ./thcntt3/build/:/usr/share/nginx/html/
+
+# File này sẽ chỉ cho docker biết rằng là làm thế nào để chạy con nginx 
+#   nginx:
+#     container_name: my-project-nginx
+# => Setup đặt tên cho dự án
+
+#    build:
+#      context: .
+# => Hướng dẫn cái nginx của chúng ta build như thế nào. 
+# context: . có nghĩa là chúng ta sẽ đứng ngay tại thư mục root luôn và đi tìm cái file Dockerfile để build
+
+#    volumes:
+#      - ./thcntt3/build/:/usr/share/nginx/html/
+# Nó sẽ lấy tất cả nội dung trong thư mục build của dự án thcntt3 và ghi đè lại thư mục html của thằng nginx trong usr/share/nginx/html/
+
+# Các lưu ý trước khi chạy file 
+# stop current running nginx
+# Chạy lệnh sau: docker compose -p hoidanit up -d
+# -p hoidanit (ta có thể đổi cái tên hoidanit thành 1 cái tên khác) là tên của cái project bên trong thằng docker compose
+# up có nghĩa là chúng ta sẽ build các file docker compose này
+# -d có nghĩa là chạy trên nền background
+
+# ./learn-nginx/config/nginx.conf:/etc/nginx/nginx.conf
+# Ghi đè file nginx.conf trong folder learn-nginx/config lên file nginx.conf của folder etc/nginx
