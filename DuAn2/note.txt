@@ -1,0 +1,31 @@
+Dự án của chúng ta sẽ chia làm 3 cục folder chính 2 và 2 file chính:
+- nginx     => Giúp chúng ta chạy ứng dụng lên
+- stackFE   => Chứa code FE
+- stackBE   => Chứa code BE
+- docker-compose.yml => Giúp chúng ta có thể chạy tất cả các ứng dụng với con Docker (chúng ta sẽ không phải build lẻ từng con một)
+- initDB.sql         => Tạo Database
+
+=> docker-compose.yml sẽ giúp chúng ta dựng toàn bộ các ứng dụng như nginx, stackBE và Database (Con stackFE luôn luôn nằm bên trong 
+con nginx rồi)
+
+- Phân biệt ports và expose
+VD về ports:
+ports: 
+   - 8001:80
+Từ nguồn là 80 của docker chúng ta sẽ có đích là 8001 của máy tính pc (Khi lên server thì nó là vps) => Để test ứng dụng tại 
+máy tính pc (Khi lên server thì nó là vps) thì chúng ta sẽ mở 1 cổng kết nối là 8001. Chúng ta sẽ sử dụng ports với mục đích là 
+cho phép người dùng có thể tương tác truy cập được ứng dụng của chúng ta.
+
+VD về expose:
+expose: 
+    - "3006"
+Chúng ta sẽ mở một cái port 3006 nhưng mà cái port này nó dùng để kết nối giữa các ứng dụng với nhau thôi.
+Hay nói 1 cách cụ thể đấy là mình expose cái cổng 3006 nhưng mà tại cái localhost của chúng ta thì chúng ta sẽ 
+không thể gõ http://localhost:3006 để truy cập tới nó được bởi vì chúng ta không hề có bước mapping port. Nghĩa là chúng ta chỉ có
+nguồn chứ không hề có đích. Chúng ta sẽ sử dụng expose với mục đích là chỉ cho các ứng dụng bên trong con docker sử dụng nó thôi.
+Chúng ta không muốn người dùng ở local truy cập vào đây (Hạn chế quyền truy cập)
+
+- Tham số môi trường của thằng docker nó sẽ ghi đè tham số môi trường của ứng dụng của chúng ta
+
+- Việc chúng ta build con docker nó không khác gì việc clone dự án cả. Chúng ta có dữ liệu gì bên trong máy tính của chúng ta thì chúng
+ta sẽ copy vào bên trong con docker
