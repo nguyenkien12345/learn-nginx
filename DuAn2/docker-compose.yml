@@ -3,18 +3,27 @@ services:
   nginx:
     # Đặt tên container là my-nginx
     container_name: my-nginx
+    depends_on:
+      #  service nginx sẽ phụ thuộc vào container backend.
+      #  service nginx sẽ không bao giờ bắt đầu cho đến khi container backend đã bắt đầu và sẵn sàng
+      - backend
+    restart: always
     build:
-      # Nó sẽ tìm file Dockerfile trong folder nginx để build cục service này
-      context: ./nginx
+      # Nó sẽ đứng ngay root của toàn bộ dự án (Cùng cấp với folder nginx, stackBE, stackeFE) (Khi ta build chung cục frontend ngay trong con nginx)
+      context: .
+      # Tìm file Dockerfile trong folder nginx để thực hiện quá trình build cục service này
+      dockerfile: ./nginx/Dockerfile
     ports:
       - 8001:80
     volumes:
-      # Ghi đè file nginx.conf trong folder config lên file nginx.conf của folder etc/nginx 
-      - ./config/nginx.conf:/etc/nginx/nginx.conf
+      # Ghi đè file nginx.conf trong folder nginx/config của dự án lên file nginx.conf của folder etc/nginx trong docker
+      - ./nginx/config/nginx.conf:/etc/nginx/nginx.conf
       # Nó sẽ lấy tất cả nội dung trong thư mục build của cục stackFE và ghi đè lại thư mục html của thằng nginx trong usr/share/nginx/html/
-      - ../stackFE/build/:/usr/share/nginx/html/
+      # - ../stackFE/build/:/usr/share/nginx/html/ 
+      # (Chỉ chạy dòng này khi ta build con frontend độc lập, còn nếu build con frontend trong con nginx thì không cần dòng này)
 
   # Đặt tên service là mysqldb
+  
   mysqldb:
     # Docker pull image mysql:5.7 
     image: mysql:5.7
@@ -27,7 +36,6 @@ services:
       # Ghi đè file initDB.sql lên file initDB.sql của folder /data/application
       - ./initDB.sql:/data/application/init.sql
     environment:
-      - MYSQL_USER=root
       - MYSQL_ROOT_PASSWORD=123456789
       - MYSQL_DATABSE=stack_overflow
     # Con service backend khai báo bên dưới sẽ kết nối vào con service mysqldb này thông qua cổng 3306 
