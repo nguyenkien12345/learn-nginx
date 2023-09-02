@@ -1,4 +1,4 @@
-Dự án của chúng ta sẽ chia làm 3 cục folder chính 2 và 2 file chính:
+Dự án của chúng ta sẽ chia làm 3 cục folder chính và 2 file chính:
 - nginx     => Giúp chúng ta chạy ứng dụng lên
 - stackFE   => Chứa code FE
 - stackBE   => Chứa code BE
@@ -29,3 +29,50 @@ Chúng ta không muốn người dùng ở local truy cập vào đây (Hạn ch
 
 - Việc chúng ta build con docker nó không khác gì việc clone dự án cả. Chúng ta có dữ liệu gì bên trong máy tính của chúng ta thì chúng
 ta sẽ copy vào bên trong con docker
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+Phân biệt Cloud Hosting và Cloud Server
+- Cloud Hosting thường rẻ hơn so với Cloud Server
+- Cloud Hosting: Nó sẽ cho chúng ta 1 cái địa chỉ đăng nhập. Sau khi đăng nhập vào chúng ta chỉ việc upload code lên (giống như việc chúng ta dùng wordpress).
+Chúng ta không thể cài đặt được những công cụ cần thiết (vd: docker, mysql, nginx, ...). Nó đã setup hết tất cả mọi thứ cho chúng ta. VD: nó sẽ ép chúng ta
+dùng mysql, dùng apache, ... mà nó đã cài đặt sẵn. Nó giống như đóng khung theo 1 framework không thể có tùy chọn cài đặt tùy thích được
+- Cloud Server: Chúng ta sẽ tự xây dựng 1 con server của chúng ta. Chúng ta có thể thoải mái tùy ý cài đặt những công cụ cần thiết cho server của chúng ta như
+mysql, httpd, nginx, apache, ... Lựa chọn hệ điều hành cho con server của chúng ta
+
+------------------------------------------------------------------------------------------------------------------------------------------
+WINSCP: Giúp chúng ta kết nối và xem được toàn bộ các file trong server của chúng ta. Đây là 1 phần mềm giả lập cái con máy linux
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Hướng dẫn cài docker trên cloud server
++++++ 1. setup docker và docker compose +++++
+B1) sudo apt update
+B2) sudo apt install apt-transport-https ca-certificates curl software-properties-common
+B3) curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+B4) echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+B5) sudo apt update
+B6) apt-cache policy docker-ce
+B7) sudo apt install docker-ce docker-compose-plugin
+B8) sudo docker compose version
+B9) sudo docker version
++++++ 2. Bỏ keyword sudo khi run docker +++++ 
+B10) sudo usermod -aG docker ${USER}
+B11) su - ${USER}
+B12) id -nG
++++++ 3. Test docker với nginx +++++ 
+B13) docker run --name hoidanit -p 80:80 -d nginx => Sau đó ra google gõ: http://178.128.222.32/ => Hiển thị ra trang Welcome to nginx!
+B14) docker stop hoidanit
+B15) docker system prune -af
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Khi deploy dự án lên trên host của web server
+B1) Gõ: chmod +x init-letsencrypt.sh => chmod: Là lệnh để thay đổi quyền truy cập (permissions), +x: Thêm quyền thực thi cho tệp tin init-letsencrypt.sh
+B2) Gõ: sudo apt update
+B3) Gõ: sudo apt install -y dos2unix
+B4) Kiểm tra quá trình cài đặt thành công hay thất bại:
+dos2unix --version
+unix2dos --version
+B5) Sau đó chúng ta sẽ thực hiện convert file sh sang kiểu Unix Format
+Gõ: dos2unix ./init-letsencrypt.sh
+B6) Gõ: bash init-letsencrypt.sh
+
