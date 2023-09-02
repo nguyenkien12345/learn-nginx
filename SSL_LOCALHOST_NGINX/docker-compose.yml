@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:1.15-alpine
+    restart: unless-stopped
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  
+  certbot:
+    image: certbot/dns-nsone:v1.18.0
+    restart: unless-stopped
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+
+# Lưu ý:
+# Chúng ta thấy ở cả 2 con service nginx và certbot đều có volumes giống nhau: 
+# - ./certbot/conf:/etc/letsencrypt
+# - ./certbot/www:/var/www/certbot
+# - Việc chúng ta tạo ra certificate thông qua con certbot thì nó sẽ lưu ở trong các thư mục sau: etc/letsencrypt và var/www/certbot của con certbot
+# Chúng ta sẽ (mount ngược) mapping ngược vào trong  ./certbot/conf và ./certbot/www của con nginx. Nghĩa là cái đầu ra của cái việc tạo chứng chỉ của con
+# certbot sẽ là cái đầu vào của con nginx. Con nginx sẽ đọc được chứng chỉ thông qua volumes
+
+# Các bước thực hiện:
+# B1) Vào D:\html\SSL_LOCALHOST_NGINX => Mở Git Bash Here
+# B2) Gõ sh init-letsencrypt.sh
+# B3) Lúc này ta sẽ vào trong certbot/conf/live/hoidanitexample.xyz. Nó sẽ có 2 file fullchain.pem và private.pem (Đây chính là cặp SSL của chúng ta)
+# (hoidanitexample.xyz chính là tên miền của chúng ta). 
